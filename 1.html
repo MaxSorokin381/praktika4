@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vue.js Quotes</title>
+</head>
+<body>
+    <div id="app">
+        <ul>
+            <li v-for="quote in quotes" :key="quote.quote">
+                <blockquote>
+                    "{{ quote.quote }}"
+                </blockquote>
+                <p>- {{ quote.source }}</p>
+            </li>
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                quotes: [
+                    {
+                        "quote": "This is just a Quote1",
+                        "source": "Christopher"
+                    },
+                    {
+                        "quote": "This is just a Quote2",
+                        "source": "Martin"
+                    },
+                    {
+                        "quote": "This is just a Quote3",
+                        "source": "Dennis"
+                    },
+                    {
+                        "quote": "This is just a Quote4",
+                        "source": ""
+                    }
+                ]
+            }
+        });
+    </script>
+</body>
+</html>
