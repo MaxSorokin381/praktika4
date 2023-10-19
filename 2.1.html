@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список студентів</title>
+    <style>
+        .highlighted {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input type="text" v-model="search" placeholder="Пошук за прізвищем">
+        <table>
+            <thead>
+                <tr>
+                    <th>ПІБ</th>
+                    <th>Група</th>
+                    <th>Рік народження</th>
+                    <th>Практична</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="student in filteredStudents" :key="student.id" :class="{ highlighted: student.id === selectedStudentId }">
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.group }}</td>
+                    <td>{{ student.birthYear }}</td>
+                    <td>
+                        <input type="checkbox" v-model="student.passedPractical">
+                    </td>
+                    <td>
+                        <a href="#" @click="deleteStudent(student.id)">Видалити</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.29/dist/vue.global.prod.js"></script>
+    <script>
+        const { ref, computed, onMounted } = Vue;
+
+        const app = Vue.createApp({
+            setup() {
+                const students = ref([
+                    { id: 1, name: "Іванов Іван", group: "РПЗ 20-2-9", birthYear: 2003, passedPractical: true },
+                    { id: 2, name: "Ігнатюк Володимир", group: "РПЗ 20-1-9", birthYear: 2004, passedPractical: false },
+                    { id: 3, name: "Максимович Максим", group: "РПЗ 20-2-9", birthYear: 2005, passedPractical: true },
+                ]);
+
+                const search = ref('');
+                const selectedStudentId = ref(null);
+
+                const filteredStudents = computed(() => {
+                    const query = search.value.toLowerCase();
+                    return students.value.filter(student => student.name.toLowerCase().includes(query));
+                });
+
+                const deleteStudent = (studentId) => {
+                    const index = students.value.findIndex(student => student.id === studentId);
+                    if (index !== -1) {
+                        students.value.splice(index, 1);
+                    }
+                };
+
+                onMounted(() => {
+                    // Assign unique IDs to students (for simplicity in this example)
+                    let idCounter = 1;
+                    for (const student of students.value) {
+                        student.id = idCounter++;
+                    }
+                });
+
+                return {
+                    students,
+                    search,
+                    selectedStudentId,
+                    filteredStudents,
+                    deleteStudent,
+                };
+            },
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>
