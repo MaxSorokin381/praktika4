@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список студентів</title>
+    <style>
+        .highlighted {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input type="text" v-model="search" placeholder="Пошук за прізвищем">
+        <table>
+            <thead>
+                <tr>
+                    <th>ПІБ</th>
+                    <th>Група</th>
+                    <th>Рік народження</th>
+                    <th>Практична</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="student in filteredStudents" :key="student.id" :class="{ highlighted: student.id === selectedStudentId }">
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.group }}</td>
+                    <td>{{ student.birthYear }}</td>
+                    <td>
+                        <input type="checkbox" v-model="student.passedPractical">
+                    </td>
+                    <td>
+                        <a href="#" @click="deleteStudent(student.id)">Видалити</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Додати нового студента:</h2>
+        <div>
+            <label for="newName">ПІБ:</label>
+            <input type="text" id="newName" v-model="newStudent.name">
+        </div>
+        <div>
+            <label for="newGroup">Група:</label>
+            <select id="newGroup" v-model="newStudent.group">
+                <option value="РПЗ 20-2-9">РПЗ 20-2-9</option>
+                <option value="РПЗ 20-1-9">РПЗ 20-1-9</option>
+            </select>
+        </div>
+        <div>
+            <label for="newBirthYear">Рік народження:</label>
+            <input type="number" id="newBirthYear" v-model="newStudent.birthYear">
+        </div>
+        <div>
+            <label for="newPassedPractical">Здав практичну:</label>
+            <input type="checkbox" id="newPassedPractical" v-model="newStudent.passedPractical">
+        </div>
+        <div>
+            <button @click="addStudent">Додати студента</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.29/dist/vue.global.prod.js"></script>
+    <script>
+        const { ref, computed, onMounted } = Vue;
+
+        const app = Vue.createApp({
+            setup() {
+                const students = ref([
+                    { id: 1, name: "Іванов Петро", group: "РПЗ 20-2-9", birthYear: 1998, passedPractical: true },
+                    { id: 2, name: "Петров Андрій", group: "РПЗ 20-1-9", birthYear: 1999, passedPractical: false },
+                    { id: 3, name: "Сидоров Олексій", group: "РПЗ 20-2-9", birthYear: 1997, passedPractical: true },
+            ]);
+
+                const search = ref('');
+                const selectedStudentId = ref(null);
+                const newStudent = ref({
+                    name: '',
+                    group: 'РПЗ 20-2-9',
+                    birthYear: '',
+                    passedPractical: false
+                });
+
+                const filteredStudents = computed(() => {
+                    const query = search.value.toLowerCase();
+                    return students.value.filter(student => student.name.toLowerCase().includes(query));
+                });
+
+                const deleteStudent = (studentId) => {
+                    const index = students.value.findIndex(student => student.id === studentId);
+                    if (index !== -1) {
+                        students.value.splice(index, 1);
+                    }
+                };
+
+                const addStudent = () => {
+                    if (newStudent.value.name) {
+                        newStudent.value.id = students.value.length + 1;
+                        students.value.push({ ...newStudent.value });
+                        newStudent.value = {
+                            name: '',
+                            group: 'РПЗ 20-2-9',
+                            birthYear: '',
+                            passedPractical: false
+                        };
+                    }
+                };
+
+                onMounted(() => {
+                    let idCounter = 1;
+                    for (const student of students.value) {
+                        student.id = idCounter++;
+                    }
+                });
+
+                return {
+                    students,
+                    search,
+                    selectedStudentId,
+                    newStudent,
+                    filteredStudents,
+                    deleteStudent,
+                    addStudent,
+                };
+            },
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>
